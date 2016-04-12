@@ -43,9 +43,9 @@ struct State *State_create() {
       st->transitions[i] = malloc(sizeof(char)*j); // allocate the transition array
       if (st->transitions[i]) {
         int k;
-        // this shit doesn't work, geez :(
-        for(k = 0; j < j; k++) {
-          st->transitions[i][k] = tr[k]; // this fucking line is killing me
+        for(k = 0; k < j; k++) {
+          printf("%d %d %d\n", i, j, k);
+          st->transitions[i][k] = tr[k];
         }
       }
     }
