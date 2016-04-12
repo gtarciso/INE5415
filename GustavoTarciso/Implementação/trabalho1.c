@@ -27,7 +27,6 @@ struct State *State_create() {
   printf("%d\n", ln);
   st->transitions = malloc(sizeof(char)*ln); // allocate the struc with the line size
   int i, j;
-  char lel[ln];
   if(st->transitions) {
     for(i = 0; i < n_symbols; i++) { // populate transitions vector
       j = 0;
@@ -37,8 +36,6 @@ struct State *State_create() {
         scanf("%c", &aux); // allocate the transitions of state by the symbol
         printf("%c\n", aux);
         tr[j] = aux;
-        //strcpy(st->transitions[i][j], aux); 
-        //st->transitions[i][j] = aux;
         if(aux == '-') // maintence the loop, if transitions doesn't exist, interrupt while
           aux = '}';
         j++;
