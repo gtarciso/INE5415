@@ -57,14 +57,19 @@ void State_print(struct State *st) {
   int i, j;
   for(i = 0; i < st->head_size; i++)
     printf("%c ", st->head[i]);
-  for(i = 0; i < n_symbols; i++);
+  for(i = 0; i < n_symbols; i++) {
     j  = 0;
-    printf("{");
-    while(st->transitions[i][j] != '}')
-      if(st->transitions[i][j+i] == '}')
+    while(st->transitions[i][j] != '}') {
+      if(st->transitions[i][j+1] == '}')
         printf("%c}", st->transitions[i][j]);
+      else if(st->transitions[i][j]=='{')
+        printf("{");
       else
-        printf("%c, ", st->transitions[i][j]);
+        printf("%c", st->transitions[i][j]);
+      j++;
+    }
+  }
+  printf("\n");
 }
 
 /*
@@ -91,12 +96,7 @@ int main() {
   scanf("%d ", &n_symbols);
   scanf("%d ", &n_states);
   int i, j;
-  for(i = 0; i < n_states; i++)
-    states[i] = State_create();
-  for(i = 0; i < n_states; i++){
-    free(states[i]->head);
-    free(states[i]->transitions);
-  }
-  free(states);
+  struct State *estado = State_create();
+  State_print(estado);    
   return 0;
 }
