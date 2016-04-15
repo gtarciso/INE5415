@@ -35,13 +35,15 @@ struct State *State_create(int _hs) {
   if(st->transitions) {
     for(i = 0; i < n_symbols; i++) { // populate transitions vector
       j = 0;
-      aux = 'z'; // maintenance while' loop
+      aux = 'z'; // maintenance while's loop
       char tr[ln+1];
       while(aux != '}') { // maintenance loop, in transition format {q0, ..., qn}
         scanf("%c", &aux); // allocate the transitions of state by the symbol
         tr[j] = aux;
-        if(aux == '-') // maintence the loop, if transitions doesn't exist, interrupt while
+        if(aux == '-') { // maintence the loop, if transitions doesn't exist, interrupt while
+          printf("%c\n", tr[j]);
           aux = '}';
+        }
         j++;
       }
       st->transitions[i] = malloc(sizeof(char)*j); // allocate the transition array
@@ -72,6 +74,10 @@ void State_print(struct State *st) {
         printf("%c}", st->transitions[i][j]);
       else if(st->transitions[i][j]== '{' )
         printf("{");
+      else if (st->transitions[i][j] == '-') {
+        printf("-");
+        break;
+      }
       else
         printf("%c", st->transitions[i][j]);
       j++;
