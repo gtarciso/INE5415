@@ -4,7 +4,7 @@
 
 struct State {
   int head_size; // amount of symbols in state's head
-  char* head; // the actual state
+  char *head; // the actual state
   char **transitions; // transitions from each symbol in this state
 };
 
@@ -18,23 +18,27 @@ int line_size();
 
 void f_size();
 
-struct State *State_create() {
+void the_walking_file();
+
+struct State *State_create(int _hs) {
   struct State *st = malloc(sizeof(struct State)); // allocate the structure
-  st->head_size = 1;
-  st->head = malloc(sizeof(char)*st->head_size);
-  scanf("%c ", st->head); // define the head of the state (the state properly)
-  int ln = line_size();
-  printf("%d\n", ln);
-  st->transitions = malloc(sizeof(char)*ln); // allocate the struc with the line size
+  st->head_size = _hs;
   int i, j;
+  char aux; // auxiliar to loop's maintenance
+  st->head = malloc(sizeof(char)*(st->head_size));
+  for (i = 0; i < _hs; i++){
+    scanf("%c", &aux); // define the head of the state (the state properly)
+    st->head[i] = aux;
+  }
+  int ln = line_size();
+  st->transitions = malloc(sizeof(char)*ln); // allocate the struc with the line size
   if(st->transitions) {
     for(i = 0; i < n_symbols; i++) { // populate transitions vector
       j = 0;
-      char aux = 'z'; // auxiliar to loop's maintenance
-      char tr[ln];
+      aux = 'z'; // maintenance while' loop
+      char tr[ln+1];
       while(aux != '}') { // maintenance loop, in transition format {q0, ..., qn}
         scanf("%c", &aux); // allocate the transitions of state by the symbol
-        printf("%c\n", aux);
         tr[j] = aux;
         if(aux == '-') // maintence the loop, if transitions doesn't exist, interrupt while
           aux = '}';
@@ -44,14 +48,18 @@ struct State *State_create() {
       if (st->transitions[i]) {
         int k;
         for(k = 0; k < j; k++) {
-          printf("%d %d %d\n", i, j, k);
           st->transitions[i][k] = tr[k];
         }
       }
     }
+    the_walking_file();
     return st;
   }
 }
+
+/*
+ * print the automata
+ */
 
 void State_print(struct State *st) {
   int i, j;
@@ -62,7 +70,7 @@ void State_print(struct State *st) {
     while(st->transitions[i][j] != '}') {
       if(st->transitions[i][j+1] == '}')
         printf("%c}", st->transitions[i][j]);
-      else if(st->transitions[i][j]=='{')
+      else if(st->transitions[i][j]== '{' )
         printf("{");
       else
         printf("%c", st->transitions[i][j]);
@@ -80,10 +88,23 @@ void f_size() {
   fseek(stdin, 0L, SEEK_END);
   file_size = ftell(stdin);
   fseek(stdin, 0L, SEEK_SET);
+  rewind(stdin);
 }
+
+/*
+ * a method to move the pointer to the next line
+ * avoiding some bugs with scanf
+ */
+
+void the_walking_file() {
+  while(getc(stdin) != '\n')
+    continue;
+}
+
 /*
  * get line size moving a file pointer and counting
  */
+
 int line_size() {
   int count = 0;
   while(getc(stdin) != '\n')
@@ -93,10 +114,15 @@ int line_size() {
 }
 
 int main() {
-  scanf("%d ", &n_symbols);
-  scanf("%d ", &n_states);
-  int i, j;
-  struct State *estado = State_create();
-  State_print(estado);    
+  scanf("%d", &n_symbols);
+  scanf("%d", &n_states);
+  the_walking_file();
+  int i, j; 
+  struct State *estado = State_create(1);
+  struct State *estado1 = State_create(1);
+  struct State *estado2 = State_create(1);
+  State_print(estado);
+  State_print(estado1);
+  State_print(estado2);
   return 0;
 }
