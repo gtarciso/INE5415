@@ -20,6 +20,8 @@ void f_size();
 
 void the_walking_file();
 
+void generate_FNA(int n);
+
 struct State *State_create(int _hs) {
   struct State *st = malloc(sizeof(struct State)); // allocate the structure
   st->head_size = _hs;
@@ -41,7 +43,6 @@ struct State *State_create(int _hs) {
         scanf("%c", &aux); // allocate the transitions of state by the symbol
         tr[j] = aux;
         if(aux == '-') { // maintence the loop, if transitions doesn't exist, interrupt while
-          printf("%c\n", tr[j]);
           aux = '}';
         }
         j++;
@@ -119,16 +120,30 @@ int line_size() {
   return count;
 }
 
+void generate_FNA(int n) {
+  int i;
+  for(i = 0; i < n; i++) {
+    int ln = line_size();
+    struct State *st = malloc(sizeof(struct State));
+    st = malloc(sizeof(char)*ln);
+    st = State_create(1);
+    states[i] = st;
+  }
+}
+
 int main() {
+  f_size();
+  /*
+   * Allocate the States array 
+   */
+  states = malloc(sizeof(struct State));
+  states = malloc(sizeof(char)*file_size);
   scanf("%d", &n_symbols);
   scanf("%d", &n_states);
   the_walking_file();
-  int i, j; 
-  struct State *estado = State_create(1);
-  struct State *estado1 = State_create(1);
-  struct State *estado2 = State_create(1);
-  State_print(estado);
-  State_print(estado1);
-  State_print(estado2);
+  generate_FNA(n_states); 
+  int i = 0;
+  for(i = 0; i < n_states; i++)
+    State_print(states[i]);
   return 0;
 }
