@@ -1,0 +1,57 @@
+#include "state.hpp"
+#include <iostream>
+#include <string>
+
+State::State() {
+	this->symbol = 0;
+}
+
+State::State(int _symbol, bool _epsilon) {
+	if (_epsilon)
+		_symbol += 1;
+	this->symbol = _symbol;
+	this->epsilon = _epsilon;
+	this->transitions = new string* [_symbol];
+}
+
+/*
+ * read input file and generate FNA
+ */
+
+void State::readFile() {
+	char _aux;
+	int i, j;
+	scanf("%c", &_aux);
+	this->head = new string(_aux);
+	for(i = 0; i < this->symbol; i++) {
+		char _transition[100]; // 
+		j = 0;
+		while(_aux != "}") {
+			scanf("%c", &_aux);
+			_transition[j] = _aux;
+			j++;
+			if(_aux == "-") // maintence the loop when don't have transitions by a symbol
+				_aux = "}";
+		}
+		this->transitions[i] = new string(_transition);
+	}
+	State::newLine();
+}
+
+/*
+ * fix any problem with scanf
+ */
+
+void State::newLine() {
+	while(getc(stdin) != '\n')
+		continue;
+}
+
+void State::printItself() {
+	int i;
+	printf("%s ", this->head);
+	for (i = 0; i < this->symbol; i++) {
+		printf("%s ", this->transitions[i]);
+	}
+	printf("\n");
+}
