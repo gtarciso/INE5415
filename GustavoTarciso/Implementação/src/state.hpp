@@ -28,7 +28,7 @@ public:
 
 	void readFile();
 	void newLine();
-	//void printItself(State *_st);
+	void printItself();
 };
 
 #endif

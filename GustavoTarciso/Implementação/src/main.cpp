@@ -6,7 +6,7 @@
 
 list<State*> *FNAtoFDA(list<State*> *_states);
 
-void printAutomata(list<State*> *_states, int _nsymbols);
+void printAutomata(list<State*> *_states);
 
 int main() {
 	int _nsymbols, _nstates, _epsilon;
@@ -17,12 +17,13 @@ int main() {
 		for(i = 0; i < _nstates; i++) {
 			states->push_back(new State(_nsymbols, true));
 		} 
+		_nsymbols += 1;
 	} else {
 		for(i = 0; i < _nstates; i++) {
 			states->push_back(new State(_nsymbols, false));
 		}
 	}
-	printAutomata(states, _nsymbols);
+	printAutomata(states);
 	return 0;
 }
 
@@ -30,17 +31,9 @@ list<State*> *FNAtoFDA(list<State*> *_states) {
 	return _states;
 }
 
-void printAutomata(list<State*> *_states, int _nsymbols) {
-	int j;
+void printAutomata(list<State*> *_states) {
 	std::list<State*>::iterator it = _states->begin();
 	for(; it != _states->end(); ++it) {
-		cout << (*it)->getHead();
-		string **_tr;
-		_tr = (*it)->getTransitions();
-		for (j = 0; j < _nsymbols; j++) {
-			cout << _tr[j]; 
-		}
-		cout << endl;
-		delete _tr;
+		(*it)->printItself();
 	}
 }

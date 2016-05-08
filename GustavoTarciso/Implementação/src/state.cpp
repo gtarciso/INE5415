@@ -12,6 +12,7 @@ State::State(int _symbol, bool _epsilon) {
 	this->symbol = _symbol;
 	this->epsilon = _epsilon;
 	this->transitions = new string*[_symbol];
+	this->readFile();
 }
 
 /*
@@ -60,13 +61,13 @@ void State::newLine() {
 	while(getc(stdin) != '\n')
 		continue;
 }
-/*
-void State::printItself(State *_st) {
+
+void State::printItself() {
 	int i;
-	printf("%s ", _st->head);
-	for (i = 0; i < _st->symbol; i++) {
-		printf("%s ", _st->transitions[i]);
+	cout << *(this->head);
+	for (i = 0; i < this->symbol; i++) {
+		cout << *(this->transitions[i]);
 	}
-	printf("\n");
+	cout << endl;
 }
-*/
+
