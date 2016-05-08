@@ -9,7 +9,7 @@ using namespace std;
 class State {
 private:
 	string *head; // state head
-	string *transitions[];
+	string **transitions;
 	bool init;
 	bool final;
 	bool epsilon;
@@ -18,9 +18,17 @@ private:
 public:
 	State();
 	State(int _symbol, bool _epsilon);
+
+	/*
+	 * getters and setters
+	 */
+
+	string *getHead();
+	string **getTransitions();
+
 	void readFile();
 	void newLine();
-	void printItself();
+	//void printItself(State *_st);
 };
 
 #endif

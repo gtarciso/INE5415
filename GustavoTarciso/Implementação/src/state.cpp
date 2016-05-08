@@ -11,7 +11,19 @@ State::State(int _symbol, bool _epsilon) {
 		_symbol += 1;
 	this->symbol = _symbol;
 	this->epsilon = _epsilon;
-	this->transitions = new string* [_symbol];
+	this->transitions = new string*[_symbol];
+}
+
+/*
+ * Getters and setters
+ */
+
+string *State::getHead() {
+	return this->head;
+}
+
+string **State::getTransitions() {
+	return this->transitions;
 }
 
 /*
@@ -20,18 +32,20 @@ State::State(int _symbol, bool _epsilon) {
 
 void State::readFile() {
 	char _aux;
+	char _saux[1];
 	int i, j;
 	scanf("%c", &_aux);
-	this->head = new string(_aux);
+	_saux[0] = _aux;
+	this->head = new string(_saux);
 	for(i = 0; i < this->symbol; i++) {
 		char _transition[100]; // 
 		j = 0;
-		while(_aux != "}") {
+		while(_aux != '}') {
 			scanf("%c", &_aux);
 			_transition[j] = _aux;
 			j++;
-			if(_aux == "-") // maintence the loop when don't have transitions by a symbol
-				_aux = "}";
+			if(_aux == '-') // maintence the loop when don't have transitions by a symbol
+				_aux = '}';
 		}
 		this->transitions[i] = new string(_transition);
 	}
@@ -46,12 +60,13 @@ void State::newLine() {
 	while(getc(stdin) != '\n')
 		continue;
 }
-
-void State::printItself() {
+/*
+void State::printItself(State *_st) {
 	int i;
-	printf("%s ", this->head);
-	for (i = 0; i < this->symbol; i++) {
-		printf("%s ", this->transitions[i]);
+	printf("%s ", _st->head);
+	for (i = 0; i < _st->symbol; i++) {
+		printf("%s ", _st->transitions[i]);
 	}
 	printf("\n");
 }
+*/
