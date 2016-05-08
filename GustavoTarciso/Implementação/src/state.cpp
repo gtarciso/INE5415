@@ -7,6 +7,7 @@ State::State() {
 }
 
 State::State(int _symbol, bool _epsilon) {
+	State::newLine();
 	if (_epsilon)
 		_symbol += 1;
 	this->symbol = _symbol;
@@ -33,14 +34,16 @@ string **State::getTransitions() {
 
 void State::readFile() {
 	char _aux;
-	char _saux[1];
+	char _saux[0];
 	int i, j;
 	scanf("%c", &_aux);
 	_saux[0] = _aux;
 	this->head = new string(_saux);
+	char *_transition;  
 	for(i = 0; i < this->symbol; i++) {
-		char _transition[100]; // 
+		_transition = new char[100];
 		j = 0;
+		_aux = 'c';
 		while(_aux != '}') {
 			scanf("%c", &_aux);
 			_transition[j] = _aux;
@@ -50,7 +53,6 @@ void State::readFile() {
 		}
 		this->transitions[i] = new string(_transition);
 	}
-	State::newLine();
 }
 
 /*
