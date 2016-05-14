@@ -8,27 +8,34 @@ using namespace std;
 
 class State {
 private:
-	string *head; // state head
+	string *head;
 	string **transitions;
 	bool init;
 	bool final;
-	bool epsilon;
-	int symbol; // number of transitions in each state
+	int nsymbol;
 
 public:
 	State();
-	State(int _symbol, bool _epsilon);
+	State(int _nsymbol);
+	State(string *_head, string **_transitions, int _nsymbol);
+	~State();
 
-	/*
-	 * getters and setters
-	 */
+/*
+ * ============= GETTERS AND SETTERS ============
+ */ 
 
-	string *getHead();
-	string **getTransitions();
+ 	string *getHead();
+ 	string **getTransitions();
+ 	bool getFinal();
 
-	void readFile();
-	void newLine();
-	void printItself();
+/*
+ * ==============================================
+ */
+
+ 	void readFile();
+ 	void newLine();
+ 	void printItself();
+
 };
 
 #endif

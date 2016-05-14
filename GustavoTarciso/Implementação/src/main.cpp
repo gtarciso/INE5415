@@ -1,39 +1,20 @@
+
 #include "state.hpp"
+#include "automata.hpp"
 
-#include <iostream>
-#include <string>
-#include <list>
-
-list<State*> *FNAtoFDA(list<State*> *_states);
-
-void printAutomata(list<State*> *_states);
+using namespace std;
 
 int main() {
-	int _nsymbols, _nstates, _epsilon;
-	list<State*> *states = new list<State*>;
-	scanf("%d %d %d", &_nsymbols, &_nstates, &_epsilon);
-	int i;
-	if(_epsilon > 0) {
-		for(i = 0; i < _nstates; i++) {
-			states->push_back(new State(_nsymbols, true));
-		} 
-		_nsymbols += 1;
+	Automata *machine, *_aux;
+	_aux = new Automata();
+	int nstates, nsymbols, epsilon;
+	scanf("%d %d %d", &nsymbols, &nstates, &epsilon);
+	_aux->newLine();
+	if(epsilon > 0) {
+		machine = new Automata(true, nsymbols, nstates);
 	} else {
-		for(i = 0; i < _nstates; i++) {
-			states->push_back(new State(_nsymbols, false));
-		}
+		machine = new Automata(false, nsymbols, nstates);
 	}
-	printAutomata(states);
-	return 0;
-}
-
-list<State*> *FNAtoFDA(list<State*> *_states) {
-	return _states;
-}
-
-void printAutomata(list<State*> *_states) {
-	std::list<State*>::iterator it = _states->begin();
-	for(; it != _states->end(); ++it) {
-		(*it)->printItself();
-	}
+	machine->generateFDA();
+	machine->printAutomata();
 }
