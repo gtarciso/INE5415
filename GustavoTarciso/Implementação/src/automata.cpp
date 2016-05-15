@@ -51,6 +51,7 @@ void Automata::generateFDA() {
 	for(State *state : *(this->states)) {
 		_heads[i] = state->getHead();
 		_auxHeads[i] = state->getHead();
+		i++;
 	}
 	int cont;
 	string **_tr, **_newtr;
@@ -58,24 +59,30 @@ void Automata::generateFDA() {
 		_tr = state->getTransitions();
 		for(i = 0; i < this->nsymbol; i++) {
 			cont = 0;
+			if (*_tr[i] == "-") {
+				cont = 1;
+			}
 			for (j = 0; j < this->nstates; j++) {
 				if(_tr[i]->size() == 3) {
-					_tr[i]->erase(0, 0);
+					_tr[i]->erase(0, 1);
 					_tr[i]->pop_back();
 				}
+				//cout << *_auxHeads[j] << endl;
+				//cout << *_tr[i] << endl;
 				if(!(*_tr[i]).compare((*_auxHeads[j]))) { // if the new transitions doesn't exist in list of states, create new state
 					cont++;	
 				}
-				printf("\n\n\nchegou aqui\n\n\n");
 			}
 			if(cont == 0) {
 				_head = _tr[i];
+				cout << *_head << endl;
 				_auxHeads[this->nstates] = _head;
 				this->incrementNStates(this->nstates);
 				_newtr = getNTrasitions(_heads, _head);
 			}
 		}
-		this->states->push_back(new State(_head, _newtr, this->nsymbol)); // make constructor :D
+		this->states->push_back(new State(_head, _newtr, this->nsymbol));
+		cout << "chegou aqui" << endl;
 	}
 }
 
