@@ -16,10 +16,10 @@ State::State(int _nsymbol) {
 	this->readFile();
 }
 
-State::State(string *_head, string **_transitions, int _nsymbol){
+State::State(string *_head, string **_transitions, int _nsymbol, bool _final){
 	this->nsymbol = _nsymbol;
 	this->init = false;
-	this->final = false;
+	this->final = _final;
 	this->head = _head;
 	this->transitions = _transitions;
 }

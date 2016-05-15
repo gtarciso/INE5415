@@ -13,6 +13,7 @@ class Automata {
 private:
 	list<State*> *states;
 	bool epsilon;
+	bool flagFinal;
 	int nsymbol;
 	int nstates;
 	int nstatesFNA;
