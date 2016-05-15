@@ -15,6 +15,7 @@ private:
 	bool epsilon;
 	int nsymbol;
 	int nstates;
+	int nstatesFNA;
 
 public:
 	Automata();
