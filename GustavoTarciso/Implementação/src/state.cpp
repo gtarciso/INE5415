@@ -52,6 +52,8 @@ void State::readFile() {
 	} 
 	char _head[10];
 	i = 0;
+	if(aux == '\n')
+		scanf("%c", &aux);
 	while(aux != ' ') {
 		_head[i] = aux;
 		scanf("%c", &aux);
@@ -65,6 +67,8 @@ void State::readFile() {
 		aux = 'c'; // necessary to dont' ignore other states after find the first '}'
 		while(aux != '}') {
 			scanf("%c", &aux);
+			if(aux == '\n')
+				break;
 			transition[j] = aux;
 			j++;
 			if( j == 1 && transition[j-1] == ' ') {
@@ -76,7 +80,8 @@ void State::readFile() {
 		}
 	}
 	// this scanf exists to get the \n in end of line, because I'm getting char, instead of other type that ignore \n
-	scanf("%c", &aux);
+	if(aux != '\n')
+		scanf("%c", &aux);
 }
 
 // this method fix any problem reading file
