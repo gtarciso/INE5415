@@ -12,9 +12,10 @@ int main() {
 	_aux->newLine();
 	if(epsilon > 0) {
 		machine = new Automata(true, nsymbols, nstates);
+		machine->generateDFAEpsilon();
 	} else {
 		machine = new Automata(false, nsymbols, nstates);
+		machine->generateDFA();
 	}
-	machine->generateFDA();
 	machine->printAutomata();
 }

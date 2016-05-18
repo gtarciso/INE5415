@@ -42,9 +42,10 @@ void State::readFile() {
 	scanf("%c", &aux);
 	if(aux == '-') {
 		scanf("%c", &aux);
-		if (aux == '>');
+		if (aux == '>') {
 			this->init = true;
 			scanf("%c", &aux);
+		}
 	} 
 	if(aux == '*') {
 		this->final = true;
