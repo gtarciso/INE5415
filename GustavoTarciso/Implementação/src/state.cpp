@@ -24,6 +24,10 @@ State::State(string *_head, string **_transitions, int _nsymbol, bool _final){
 	this->transitions = _transitions;
 }
 
+void State::setHead(string *_head) {
+	this->head = _head;
+} 
+
 string *State::getHead() {
 	return this->head;
 }

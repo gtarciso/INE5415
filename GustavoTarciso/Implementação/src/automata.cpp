@@ -26,7 +26,7 @@ Automata::Automata(bool _epsilon, int _nsymbol, int _nstates) {
 	this->generateFNA(); // converts the FNA inserted by file, in a DFA	
 	if(this->epsilon) {
 		this->epsilonClos = epsilonClosure();
-		_nsymbol -= 1;
+		this->nsymbol -= 1;
 	}
 }
 
@@ -114,19 +114,40 @@ void Automata::incrementNStates(int _nstates) {
 }
 
 // this method get the transitions of the new state 
-string **Automata::getNTrasitions(string **_heads, string* _head) {
+string **Automata::getNTrasitions(string **_heads, string *_head) {
 	// more auxiliar variable
 	int i, j, k;
 	string **_transitions = new string*[this->nsymbol];
+	string **_fnaStates = new string*[this->nstatesFNA];
 	string **_tr, **_states;
 	// a vector to store the heads of the original FNA
 	_states = new string*[this->nstatesFNA];
 	j = 0;
 	// fill the vector with the heads!
-	for(i = 0; i < this->nstatesFNA; i++) {
-		if(_head->find(*_heads[i]) != string::npos) {
-			_states[j] = new string(*_heads[i]);
-			j++;
+	if(!this->epsilon) {
+		for(i = 0; i < this->nstatesFNA; i++) {
+			if(_head->find(*_heads[i]) != string::npos) {
+				_states[j] = new string(*_heads[i]);
+				j++;
+			}
+		}
+	} else {
+		i = 0;
+		for(State *state : *(this->states)) {
+			_fnaStates[i] = state->getHead();
+			i++;
+		}
+		string *_newStatesAux = new string();
+		for(i = 0; i < this->nstatesFNA; i++) {
+			if(_head->find(*_fnaStates[i]) != string::npos) {
+				*_newStatesAux += *(this->epsilonClos[i]);
+			}
+		}
+		for(i = 0; i < this->nstatesFNA; i++) {
+			if(_newStatesAux->find(*_fnaStates[i]) != string::npos) {
+				_states[j] = new string(*_fnaStates[i]);
+				j++;
+			}
 		}
 	}
 	// in this loop we get all the transitions that contais the FNA iterators heads, and join all in a string
@@ -144,22 +165,25 @@ string **Automata::getNTrasitions(string **_heads, string* _head) {
 			}
 		}
 		// here we cut all the trash in the string generated in the loop above
-		_transitions[i] = getFormatedTransition(_aux, _heads);
+		if(!this->epsilon)
+			_transitions[i] = getFormatedTransition(_aux, _heads);
+		else
+			_transitions[i] = getFormatedTransition(_aux, _fnaStates);
 	}
 	return _transitions;
 }
 
 // just a method to format the transition, removing some trash in the original string, and making a new transition
 string *Automata::getFormatedTransition(string *_aux, string **_states) {
-	cout << "recebido: " << *_aux << endl;
 	int i;
 	// auxiliar int, if this variable assumes zero at the end of the for below, then return "-"
 	// because the transition by the symbol doesn't exists
 	int cont = 0;
 	// loop verifying if all the transitions found corresponds to "-"
 	for(i = 0; i < this->nstatesFNA; i++) {
-		if(_aux->find(*_states[i]) != string::npos)
+		if(_aux->find(*_states[i]) != string::npos) {
 			cont++;
+		}
 	}
 	// returning "-" as commented above
 	if (cont == 0)
@@ -194,7 +218,8 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  	int i;
  	i = 0;
  	for(State *state : *(this->states)) {
- 		_heads[i] = *(state->getHead());
+ 		string _auxState = *(state->getHead());
+ 		_heads[i] = _auxState;
  		_closure[i] = (state->getHead());
  		i++;
  	}
@@ -204,7 +229,11 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  		_closure[i] = removeEquals(_closure[i], _heads);
  		
  		// remove later, just to check the epsilon closure
- 		cout << *_closure[i] << endl;
+ 	}
+ 	i = 0;
+ 	for(State *state : *(this->states)) {
+ 		state->setHead(new string(_heads[i]));
+ 		i++;
  	}
  	return _closure;
  }
@@ -259,21 +288,21 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  	return getClosure(_aux);
  }
 
-
 void Automata::generateDFAEpsilon() {
 	// push com nsymbol e flagfinal :D
 	int i, cont, j;
 	int countingHeads = 0;
 	int max = pow(2, this->nstatesFNA); // max value that the automata can assume is 2^n
 	string **_auxHeads = new string*[max];
-	list<State*> *_DFAepsilon;
+	list<State*> *_DFAepsilon = new list<State*>;
 	string *_head;
 	string **_transitions, **_tr;
 
 	_head = this->epsilonClos[0];
 	_auxHeads[countingHeads] = _head;
 	countingHeads++;
-	string *_xhead = getEpsionTransition(_head);
+	string *_xhead = new string();
+	_xhead = getEpsionTransition(_head);
 	//this->incrementNStates(this->nstates);
 	string **_newtr = getNTrasitions(_auxHeads, _xhead);
 	// guarantee that only truly new states are added to the list
@@ -287,11 +316,7 @@ void Automata::generateDFAEpsilon() {
 			if (*_tr[i] == "-") { // guarantee that the algorithm doesn't create a state "-"
 				cont = 1;
 			}
-			for (j = 0; j < this->nstates; j++) {
-				if(_tr[i]->size() == 3) {
-					_tr[i]->erase(0, 1);
-					_tr[i]->pop_back();
-				}
+			for (j = 0; j < countingHeads; j++) {
 				if(!(*_tr[i]).compare((*_auxHeads[j]))) { // if the new transitions doesn't exist in list of states, cont still zero
 					cont++;	
 				}
@@ -300,9 +325,9 @@ void Automata::generateDFAEpsilon() {
 				_head = _tr[i];
 				_auxHeads[countingHeads] = _head;
 				countingHeads++;
-				string *_xhead = getEpsionTransition(_head);
+				//string *_xhead = getEpsionTransition(_head);
 				//this->incrementNStates(this->nstates);
-				_newtr = getNTrasitions(_auxHeads, _xhead);
+				_newtr = getNTrasitions(_auxHeads, _head);
 				// guarantee that only truly new states are added to the list
 				_DFAepsilon->push_back(new State(_head, _newtr, this->nsymbol, this->flagFinal));
 				// if the actual state is the last one of the list, and don't exists another state to be created, end the loop
@@ -320,7 +345,7 @@ void Automata::generateDFAEpsilon() {
 
 string *Automata::getEpsionTransition(string *_aux) {
 	int i;
-	string *_newHead;
+	string *_newHead = new string();
 	string **_states = new string*[this->nstatesFNA];
 	for(State *state : *(this->states)) {
 		_states[i] = state->getHead();
@@ -328,7 +353,8 @@ string *Automata::getEpsionTransition(string *_aux) {
 	}
 	for(i = 0; i < this->nstatesFNA; i++) {
 		if(_aux->find(*(_states[i])) != string::npos) {
-			*_newHead += *(this->epsilonClos[i]);
+			string aux = *(this->epsilonClos[i]);
+			*_newHead += aux;
 		}
 	}
 	return _newHead;

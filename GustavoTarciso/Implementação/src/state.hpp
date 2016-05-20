@@ -27,6 +27,7 @@ public:
  	string *getHead();
  	string **getTransitions();
  	bool getFinal();
+ 	void setHead(string *_head);
 
 /*
  * ==============================================
