@@ -14,16 +14,20 @@ private:
 	list<State*> *states;
 	list<State*> *statesEpsilon;
 	bool epsilon;
-	bool flagFinal;
+	int nFinal;
 	int nsymbol;
 	int nstates;
 	int nstatesFNA;
 	string **epsilonClos;
+	string **finalStates;
 
 public:
 	Automata();
 	Automata(bool _epsilon, int _nsymbol, int _nstates);
 	~Automata();
+
+	void getFinal();
+	void setFinal();
 
 	void generateFNA();
 	void printAutomata();

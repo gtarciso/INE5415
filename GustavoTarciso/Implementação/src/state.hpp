@@ -17,7 +17,7 @@ private:
 public:
 	State();
 	State(int _nsymbol);
-	State(string *_head, string **_transitions, int _nsymbol, bool _final);
+	State(string *_head, string **_transitions, int _nsymbol, bool _final, bool initial);
 	~State();
 
 /*
@@ -27,6 +27,7 @@ public:
  	string *getHead();
  	string **getTransitions();
  	bool getFinal();
+ 	void setFinal(bool _value);
  	void setHead(string *_head);
 
 /*

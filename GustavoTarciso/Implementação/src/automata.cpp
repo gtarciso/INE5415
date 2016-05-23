@@ -14,7 +14,7 @@ Automata::Automata() {
 
 Automata::Automata(bool _epsilon, int _nsymbol, int _nstates) {
 	this->epsilon = _epsilon; // tell us if the automata is a epsilon closure automata
-	if(this->epsilon) {
+	if(this->epsilon) { // guarantee file's reading, cuz we need to read an extra "symbol" epsilon in file
 		_nsymbol += 1;
 	}
 	this->nsymbol = _nsymbol; // number of symbols
@@ -22,11 +22,13 @@ Automata::Automata(bool _epsilon, int _nsymbol, int _nstates) {
 	this->nstatesFNA = _nstates; // number of states in original FNA, IT DOESN'T change
 	this->states = new list<State*>; // list of states in automata
 	this->statesEpsilon = new list<State*>; // list of states by epsilon
-	this->flagFinal = false; // a auxiliar flag to determine if the states created in conversion to DFA are final states
-	this->generateFNA(); // converts the FNA inserted by file, in a DFA	
+	this->finalStates = new string*[nstatesFNA];
+	this->nFinal = 0; // a auxiliar flag to determine if the states created in conversion to DFA are final states
+	this->generateFNA(); // converts the FNA inserted by file, in a DFA
+	this->getFinal();	
 	if(this->epsilon) {
-		this->epsilonClos = epsilonClosure();
-		this->nsymbol -= 1;
+		this->epsilonClos = epsilonClosure(); // get epsilon closure
+		this->nsymbol -= 1; // guarantee that the automata have the right amount of states before we cut off epsilon transitions
 	}
 }
 
@@ -77,7 +79,7 @@ void Automata::generateDFA() {
 	for(State *state : *(this->states)) {
 		_tr = state->getTransitions(); // get every state transitions to made a brand new state, if necessary
 		for(i = 0; i < this->nsymbol; i++) {
-			this->flagFinal = false; // maintence the flag who tells to created state if it is a final state or not 
+			//this->flagFinal = false; // maintence the flag who tells to created state if it is a final state or not 
 			cont = 0; // auxiliar variable to assegure that the created state is really a new state
 			if (*_tr[i] == "-") { // guarantee that the algorithm doesn't create a state "-"
 				cont = 1;
@@ -99,13 +101,14 @@ void Automata::generateDFA() {
 				this->incrementNStates(this->nstates);
 				_newtr = getNTrasitions(_heads, _head);
 				// guarantee that only truly new states are added to the list
-				this->states->push_back(new State(_head, _newtr, this->nsymbol, this->flagFinal));
+				this->states->push_back(new State(_head, _newtr, this->nsymbol, false, false));
 				// if the actual state is the last one of the list, and don't exists another state to be created, end the loop
 				if(cont > 0 && state->getHead() == this->states->back()->getHead())
 					break;
 			}
 		}
 	}
+	setFinal();
 }
 
 // just a method to don't get lost with the value of number of states ;D
@@ -158,9 +161,6 @@ string **Automata::getNTrasitions(string **_heads, string *_head) {
 				if(*(state->getHead()) == *_states[k]) {
 					_tr = state->getTransitions();
 					*_aux += *_tr[i];
-					// here we set that flag to transform the created state in a final state
-					if(!this->flagFinal)
-						this->flagFinal = state->getFinal();
 				}
 			}
 		}
@@ -266,7 +266,6 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  				if(*_tr[max_symbols] == "-") {
  					return _aux;
  				}
- 				//cout << "chegou aqui" << endl;
  				if(_aux->find(*(state->getHead())) != _aux->rfind(*(state->getHead()))) {
  					return _aux;
  				}
@@ -275,9 +274,7 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  				string::iterator it;
  				for(it = _aux->begin(); it != _aux->end(); it++) {
  					if(*it == '{' || *it == '}' || *it == ',') {
- 						//cout << "teste" << endl;
  						it = _aux->erase(it);
- 						//cout << *_aux << endl;
  						if(it == _aux->end())
  							break;
  					}
@@ -303,15 +300,14 @@ void Automata::generateDFAEpsilon() {
 	countingHeads++;
 	string *_xhead = new string();
 	_xhead = getEpsionTransition(_head);
-	//this->incrementNStates(this->nstates);
 	string **_newtr = getNTrasitions(_auxHeads, _xhead);
 	// guarantee that only truly new states are added to the list
-	_DFAepsilon->push_back(new State(_head, _newtr, this->nsymbol, this->flagFinal));
+	_DFAepsilon->push_back(new State(_head, _newtr, this->nsymbol, false, true));
 
 	for(State *state : *_DFAepsilon) {
 		_tr = state->getTransitions();
 		for(i = 0; i < this->nsymbol; i++) {
-			this->flagFinal = false;
+			//this->flagFinal = false;
 			cont = 0;
 			if (*_tr[i] == "-") { // guarantee that the algorithm doesn't create a state "-"
 				cont = 1;
@@ -325,12 +321,8 @@ void Automata::generateDFAEpsilon() {
 				_head = _tr[i];
 				_auxHeads[countingHeads] = _head;
 				countingHeads++;
-				//string *_xhead = getEpsionTransition(_head);
-				//this->incrementNStates(this->nstates);
 				_newtr = getNTrasitions(_auxHeads, _head);
-				// guarantee that only truly new states are added to the list
-				_DFAepsilon->push_back(new State(_head, _newtr, this->nsymbol, this->flagFinal));
-				// if the actual state is the last one of the list, and don't exists another state to be created, end the loop
+				_DFAepsilon->push_back(new State(_head, _newtr, this->nsymbol, false, false));
 				if(cont > 0 && state->getHead() == this->states->back()->getHead())
 					break;
 			}
@@ -339,8 +331,7 @@ void Automata::generateDFAEpsilon() {
 	this->nstates = countingHeads;
 	this->states = new list<State*>;
 	this->states = _DFAepsilon;
-	// usar getNtransitions(), metade do trabalho ta feito ;D
- 	// maybe create a class epsilon closure
+	this->setFinal();
 }
 
 string *Automata::getEpsionTransition(string *_aux) {
@@ -358,4 +349,31 @@ string *Automata::getEpsionTransition(string *_aux) {
 		}
 	}
 	return _newHead;
+}
+
+void Automata::getFinal() {
+	int i = 0;
+	for(State *state : *(this->states)) {
+		if(state->getFinal()) {
+			string aux = *state->getHead();
+			this->finalStates[i] = new string(aux);
+			i++;
+		}
+	}
+	this->nFinal = i;
+}
+
+void Automata::setFinal() {
+	int i;
+	for(State *state : *(this->states)) {
+		state->setFinal(false);
+	}
+	for(State *state : *(this->states)) {
+		for(i = 0; i < this->nFinal; i++) {
+			string aux = *this->finalStates[i];
+			if((state->getHead())->find(aux) != string::npos) {
+				state->setFinal(true);
+			}
+		}
+	}
 }

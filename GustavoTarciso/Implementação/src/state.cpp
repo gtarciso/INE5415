@@ -16,9 +16,9 @@ State::State(int _nsymbol) {
 	this->readFile();
 }
 
-State::State(string *_head, string **_transitions, int _nsymbol, bool _final){
+State::State(string *_head, string **_transitions, int _nsymbol, bool _final, bool initial){
 	this->nsymbol = _nsymbol;
-	this->init = false;
+	this->init = initial;
 	this->final = _final;
 	this->head = _head;
 	this->transitions = _transitions;
@@ -38,6 +38,10 @@ string **State::getTransitions() {
 
 bool State::getFinal() {
 	return this->final;
+}
+
+void State::setFinal(bool _value) {
+	this->final = _value;
 }
 
 void State::readFile() {
