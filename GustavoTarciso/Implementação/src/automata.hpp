@@ -18,6 +18,7 @@ private:
 	int nsymbol;
 	int nstates;
 	int nstatesFNA;
+	string **symbols;
 	string **epsilonClos;
 	string **finalStates;
 
@@ -28,6 +29,7 @@ public:
 
 	void getFinal();
 	void setFinal();
+	void getSymbols();
 
 	void generateFNA();
 	void printAutomata();

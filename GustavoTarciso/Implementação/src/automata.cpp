@@ -24,6 +24,8 @@ Automata::Automata(bool _epsilon, int _nsymbol, int _nstates) {
 	this->statesEpsilon = new list<State*>; // list of states by epsilon
 	this->finalStates = new string*[nstatesFNA];
 	this->nFinal = 0; // a auxiliar flag to determine if the states created in conversion to DFA are final states
+	this->symbols = new string*[nsymbol];
+	this->getSymbols();
 	this->generateFNA(); // converts the FNA inserted by file, in a DFA
 	this->getFinal();	
 	if(this->epsilon) {
@@ -32,6 +34,19 @@ Automata::Automata(bool _epsilon, int _nsymbol, int _nstates) {
 	}
 }
 
+void Automata::getSymbols() {
+	int i;
+	char aux;
+	for(i = 0; i < this->nsymbol; i++) {
+		scanf("%c", &aux);
+		if(aux == ' ')
+			i--;
+		if(aux != ' ' && aux != '\n')
+			this->symbols[i] = new string(&aux);
+	}
+	if(aux != '\n')
+		scanf("%c", &aux);
+}
 
 // generate a FNA from file
 void Automata::generateFNA() {
@@ -48,6 +63,11 @@ void Automata::newLine() {
 }
 
 void Automata::printAutomata() {
+	int i;
+	for(i = 0; i < nsymbol; i++) {
+		cout << *(this->symbols[i]) << " ";
+	}
+	cout << endl;
 	for(State* state : *(this->states)) {
 		state->printItself();
 	}
@@ -211,6 +231,7 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  * ================================================================================================
  */ 
 
+ // main method to generate epsilon closure
  string **Automata::epsilonClosure() {
  	string **_closure = new string*[this->nstatesFNA];
  	string *_heads = new string[this->nstatesFNA];
@@ -238,6 +259,7 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  	return _closure;
  }
 
+ // this method just cut some equal symbols that could mess with all
  string *Automata::removeEquals(string *_aux, string *_heads) {
  	int i;
  	string *_auxString;
@@ -255,6 +277,7 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  	return _auxString;
  }
 
+ // Generate epsilon closure
  string *Automata::getClosure(string *_aux) {
  	string **_tr;
  	int max_symbols = this->nsymbol-1;
@@ -285,24 +308,26 @@ string *Automata::getFormatedTransition(string *_aux, string **_states) {
  	return getClosure(_aux);
  }
 
+// generate a new DFA with a FNA-epsilon
+// it does the same thing that the other DFA generation method, but with some adjusts
 void Automata::generateDFAEpsilon() {
-	// push com nsymbol e flagfinal :D
 	int i, cont, j;
 	int countingHeads = 0;
 	int max = pow(2, this->nstatesFNA); // max value that the automata can assume is 2^n
 	string **_auxHeads = new string*[max];
 	list<State*> *_DFAepsilon = new list<State*>;
 	string *_head;
-	string **_transitions, **_tr;
+	string **_tr;
 
+	// here we make a initial state to the new states list
 	_head = this->epsilonClos[0];
 	_auxHeads[countingHeads] = _head;
-	countingHeads++;
+	countingHeads++; // counter to number of states in DFA
 	string *_xhead = new string();
 	_xhead = getEpsionTransition(_head);
 	string **_newtr = getNTrasitions(_auxHeads, _xhead);
-	// guarantee that only truly new states are added to the list
 	_DFAepsilon->push_back(new State(_head, _newtr, this->nsymbol, false, true));
+	// end of initial state creation 
 
 	for(State *state : *_DFAepsilon) {
 		_tr = state->getTransitions();
@@ -334,6 +359,7 @@ void Automata::generateDFAEpsilon() {
 	this->setFinal();
 }
 
+// generate new transitions from epsilon FNA
 string *Automata::getEpsionTransition(string *_aux) {
 	int i;
 	string *_newHead = new string();
@@ -351,6 +377,7 @@ string *Automata::getEpsionTransition(string *_aux) {
 	return _newHead;
 }
 
+// get final states in FNA to generate final states in DFA conversion
 void Automata::getFinal() {
 	int i = 0;
 	for(State *state : *(this->states)) {
@@ -363,11 +390,14 @@ void Automata::getFinal() {
 	this->nFinal = i;
 }
 
+// set the final states
 void Automata::setFinal() {
 	int i;
+	// first we set all states to false
 	for(State *state : *(this->states)) {
 		state->setFinal(false);
 	}
+	// then we set only states who has old final states in it head
 	for(State *state : *(this->states)) {
 		for(i = 0; i < this->nFinal; i++) {
 			string aux = *this->finalStates[i];
