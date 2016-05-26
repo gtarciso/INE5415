@@ -32,6 +32,7 @@ Automata::Automata(bool _epsilon, int _nsymbol, int _nstates) {
 		this->epsilonClos = epsilonClosure(); // get epsilon closure
 		this->nsymbol -= 1; // guarantee that the automata have the right amount of states before we cut off epsilon transitions
 	}
+	this->getInitialState();
 }
 
 void Automata::getSymbols() {
@@ -53,6 +54,13 @@ void Automata::generateFNA() {
 	int i;
 	for(i = 0; i < this->nstates; i++) {
 		states->push_back(new State(this->nsymbol));
+	}
+}
+
+void Automata::getInitialState() {
+	for(State *state : *(this->states)) {
+		if(state->getInitial())
+			this->initial = state;
 	}
 }
 

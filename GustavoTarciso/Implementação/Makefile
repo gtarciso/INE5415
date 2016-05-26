@@ -13,9 +13,6 @@ all: eval
 
 main: ${OBJ}
 	${CC} -o main $?
-	#./main < tests/test_file2.in > results/test_file2.out
-	#./main < tests/test_file3.in > results/test_file3.out
-	#./main < tests/test_file1.in # > results/test_file1.out
 	${RM} ${TRASH}
 
 %.o: src/%.cpp

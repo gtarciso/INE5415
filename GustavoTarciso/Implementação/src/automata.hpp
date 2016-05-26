@@ -13,6 +13,7 @@ class Automata {
 private:
 	list<State*> *states;
 	list<State*> *statesEpsilon;
+	State *initial;
 	bool epsilon;
 	int nFinal;
 	int nsymbol;
@@ -35,6 +36,7 @@ public:
 	void printAutomata();
 	void newLine();
 	void generateDFA();
+	void getInitialState();
 	void incrementNStates(int _nstates);
 	string **getNTrasitions(string **_heads, string *_head);
 	string *getFormatedTransition(string *_aux, string **_states);

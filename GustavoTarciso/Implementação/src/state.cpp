@@ -40,6 +40,10 @@ bool State::getFinal() {
 	return this->final;
 }
 
+bool State::getInitial() {
+	return this->init;
+}
+
 void State::setFinal(bool _value) {
 	this->final = _value;
 }

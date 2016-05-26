@@ -29,6 +29,7 @@ public:
  	bool getFinal();
  	void setFinal(bool _value);
  	void setHead(string *_head);
+ 	bool getInitial();
 
 /*
  * ==============================================

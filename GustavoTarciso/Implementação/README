@@ -1,0 +1,48 @@
+Universidade Federal de Santa Catarina
+Departamento de Informática e Estatística
+
+Disciplina: INE5415 - Teoria da Computação
+Nome: Gustavo Tarciso da Silva
+Data: 26/05/2016
+
+Linguagem utilizada: C++
+
+Para execução do programa existe um Makefile, que ao executar
+o comando make, ele compila o código e executa o programa
+com todos os arquivos .in do diretório tests/ e gera o resultado
+com o mesmo nome, porém .out, no diretório results/, portanto
+para adicionar novos testes basta simplesmente coloca-los no
+diretório tests/ e rodar o make. Caso tenha algum erro em
+algum teste, o make não irá rodar, portanto, para que o make
+ignore erros, basta adicionar o parametro -i.
+Caso queira apenas compilar o programa o comando é make main.
+Como o programa não tem método de escrita no arquivo, caso
+queira testar manualmente, deverá ser feito da seguinte forma
+./main < "arquivo de teste" > "arquivo de resultado"
+
+Os arquivos de teste devem possuir o seguinte formato:
+
+primeira linha:
+<número de simbolos> <número de estados> <flag de epsilon>
+na qual a flag de epsilon deve ser 0 se não for um automato
+com transições por epsilon, ou 1 caso seja.
+
+segunda linha:
+<nome do simbolo 1> ... <nome do simbolo n>
+
+demais linhas: para cada estado, uma nova linha.
+<nome do estado> <transição 1> ... <transição n>
+
+especificações para os estados:
+todas as transições dos estados devem ser feitas entre chaves
+para indicar que é um estado inicial: ->
+para indicar que é um estado final: *
+indicar primeiro que é um estado inicial, e depois que é
+um estado final. ex: ->*a {a, b} {d}.
+Caso a transição seja por mais de um estado, separar por ", "
+conforme está exemplificado acima.
+Quando não há transição por nenhum estado: -
+
+O programa já possui alguns arquivos de teste no diretório
+tests/ que podem ser utilizados como exemplo na criação de
+novos arquivos de teste.
